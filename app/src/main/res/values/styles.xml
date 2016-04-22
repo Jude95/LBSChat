@@ -27,6 +27,9 @@
         <item name="colorAccent">@color/blue</item>
     </style>
 
+    <style name="LaunchTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:background">@color/black</item>
+    </style>
 
     <style name="NoSwipeTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">false</item>

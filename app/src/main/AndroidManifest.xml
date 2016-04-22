@@ -37,11 +37,23 @@
             android:name=".presentation.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/NoSwipeTheme">
+        </activity>
+        <activity android:name=".presentation.LaunchActivity"
+            android:theme="@style/LaunchTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".presentation.LoginActivity"
+            android:theme="@style/AppTheme.Blue"
+            android:label="登陆"/>
+        <activity android:name=".presentation.RegisterActivity"
+            android:theme="@style/AppTheme.Blue"
+            android:label="注册"/>
+        <activity android:name=".presentation.FindPasswordActivity"
+            android:theme="@style/AppTheme.Blue"
+            android:label="找回密码"/>
     </application>
 
 </manifest>

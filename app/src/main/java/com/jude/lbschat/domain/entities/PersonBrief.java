@@ -7,6 +7,7 @@ import android.os.Parcelable;
  * Created by Mr.Jude on 2016/4/21.
  */
 public class PersonBrief implements Parcelable {
+    private int id;
     private String name;
     private long birth;
     private int gender;//0男 1女
@@ -24,6 +25,14 @@ public class PersonBrief implements Parcelable {
         this.intro = intro;
         this.lat = lat;
         this.lng = lng;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getAddressBrief() {
@@ -98,6 +107,7 @@ public class PersonBrief implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
         dest.writeString(this.name);
         dest.writeLong(this.birth);
         dest.writeInt(this.gender);
@@ -109,6 +119,7 @@ public class PersonBrief implements Parcelable {
     }
 
     protected PersonBrief(Parcel in) {
+        this.id = in.readInt();
         this.name = in.readString();
         this.birth = in.readLong();
         this.gender = in.readInt();
