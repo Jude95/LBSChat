@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/pic_bubble">
+    <ImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginRight="8dp"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/img_avatar"
+        android:layout_alignTop="@+id/img_avatar"
+        android:layout_toRightOf="@+id/img_avatar"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/avatar"
+                android:layout_alignTop="@+id/avatar"
+                tools:text="冰凝炎息"/>
+
+            <com.jude.tagview.TAGView
+                android:id="@+id/tag_gender"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="8dp"
+                app:tag_color="#56abe4"
+                app:tag_radius="4dp"
+                app:tag_icon="@drawable/ic_male"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_intro"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:maxWidth="150dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/avatar"
+            android:layout_below="@+id/container_score"
+            tools:text="Come break me down"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
