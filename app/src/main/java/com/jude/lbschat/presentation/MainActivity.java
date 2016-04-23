@@ -1,10 +1,12 @@
 package com.jude.lbschat.presentation;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,9 +22,12 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.bumptech.glide.Glide;
 import com.github.clans.fab.FloatingActionButton;
+import com.jakewharton.rxbinding.view.RxView;
 import com.jude.beam.bijection.RequiresPresenter;
 import com.jude.beam.expansion.BeamBaseActivity;
+import com.jude.beam.expansion.BeamBasePresenter;
 import com.jude.lbschat.R;
+import com.jude.lbschat.data.AccountModel;
 import com.jude.lbschat.data.LocationModel;
 import com.jude.lbschat.domain.entities.PersonBrief;
 import com.jude.swipbackhelper.SwipeBackHelper;
@@ -31,10 +36,13 @@ import com.jude.utils.JUtils;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import rx.Subscription;
 
 @RequiresPresenter(MainPresenter.class)
 public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMap.OnMarkerClickListener, AMap.OnMapClickListener {
@@ -56,13 +64,16 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
     private UiSettings mUiSettings;
     private HashMap<Marker, PersonBrief> mMarkerMap;
     private Marker mMyLocation;
+    private LatLng mMyLocationLatLng;
     private int mStatus = 0;
 
-    private static final int MIN_ZOOM_MARKER_COUNT = 5;
+    private Subscription mLocationSubscribtion;
+
+    private static final int MIN_ZOOM_MARKER_COUNT = 2;
     private static final int MIN_ZOOM= 13;
 
     private final static int[] ZOOM_LEVEL = {
-            500000, 500000, 500000, 500000, 500000, 200000, 100000, 50000, 30000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50, 25, 10
+            500000, 500000, 500000, 500000, 500000, 200000, 100000, 50000, 30000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50, 25, 10, 0
     };
 
     @Override
@@ -114,7 +125,7 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
         mUiSettings.setZoomControlsEnabled(false);
         mUiSettings.setScaleControlsEnabled(true);
         mUiSettings.setMyLocationButtonEnabled(false);
-        moveTo(LocationModel.getInstance().getCurLocation().getLatitude(), LocationModel.getInstance().getCurLocation().getLongitude(), 13);
+        moveTo(LocationModel.getInstance().getCurrentLocation().getLatitude(), LocationModel.getInstance().getCurrentLocation().getLongitude(), 13);
         initMyPoint();
 
         aMap.setOnMarkerClickListener(this);
@@ -122,7 +133,6 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
         aMap.setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
-                JUtils.Log("Create View");
 
                 PersonBrief placeBrief = mMarkerMap.get(marker);
                 if (placeBrief == null) return null;
@@ -142,14 +152,14 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
                 }
                 Glide.with(MainActivity.this)
                         .load(placeBrief.getAvatar())
+                        .placeholder(R.drawable.avatar)
                         //.bitmapTransform(new CropCircleTransformation(MainActivity.this))
                         .into((ImageView) $(infoContent,R.id.img_avatar));
 
                 infoContent.setOnClickListener(v -> {
-//                    Intent i = new Intent(MainActivity.this, PlaceDetailActivity.class);
-//                    i.putExtra("id", mMarkerMap.get(marker).getId());
-//                    getContext().startActivity(i);
-                    JUtils.Toast("Click"+placeBrief.getName());
+                    Intent i = new Intent(MainActivity.this, PersonDetailActivity.class);
+                    i.putExtra(BeamBasePresenter.KEY_DATA, (Parcelable) mMarkerMap.get(marker));
+                    startActivity(i);
                 });
 
                 return infoContent;
@@ -165,8 +175,8 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
 
     private void moveToAdjustPlace(ArrayList<PersonBrief> personBriefs) {
         double maxDistance = 0;
-        double myLat = LocationModel.getInstance().getCurLocation().getLatitude();
-        double myLng = LocationModel.getInstance().getCurLocation().getLongitude();
+        double myLat = LocationModel.getInstance().getCurrentLocation().getLatitude();
+        double myLng = LocationModel.getInstance().getCurrentLocation().getLongitude();
         for (PersonBrief placeBrief : personBriefs) {
             double distance = JUtils.distance(myLng,myLat, placeBrief.getLng(), placeBrief.getLat());
             if (distance > maxDistance) {
@@ -176,7 +186,7 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
         int unit = (int) (maxDistance / 8);
         for (int i = ZOOM_LEVEL.length - 1; i >= 1; i--) {
             if (unit > ZOOM_LEVEL[i] && unit < ZOOM_LEVEL[i-1]) {
-                moveTo(LocationModel.getInstance().getCurLocation().getLatitude(), LocationModel.getInstance().getCurLocation().getLongitude(), i - 1);
+                moveTo(LocationModel.getInstance().getCurrentLocation().getLatitude(), LocationModel.getInstance().getCurrentLocation().getLongitude(), i-3 );
                 return;
             }
         }
@@ -187,10 +197,29 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
         markerOption.icon(BitmapDescriptorFactory
                 .fromResource(R.drawable.location_marker));
         mMyLocation = aMap.addMarker(markerOption);
-        LocationModel.getInstance().registerLocationChange(location -> {
-            JUtils.Log("latitude"+location.latitude+"  longitude"+location.longitude);
-            mMyLocation.setPosition(new LatLng(location.latitude, location.longitude));
+        mMyLocation.setPosition(mMyLocationLatLng = new LatLng(LocationModel.getInstance().getCurrentLocation().latitude, LocationModel.getInstance().getCurrentLocation().longitude));
+    }
+
+    private void startLocation(){
+        mLocationSubscribtion = LocationModel.getInstance().getLocationSubject().subscribe(location1 -> {
+            mMyLocation.setPosition(mMyLocationLatLng = new LatLng(location1.latitude, location1.longitude));
         });
+    }
+
+    private void stopLocation(){
+        mLocationSubscribtion.unsubscribe();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocation();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocation();
     }
 
     public void clearMarker(){
@@ -221,7 +250,7 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
      *
      * @param person
      */
-    private void zoomMarker(ArrayList<PersonBrief> person) {
+    private void zoomMarker(Collection<PersonBrief> person) {
         mMapView.post(() -> {
             LatLngBounds.Builder boundsBuild = new LatLngBounds.Builder();
             boundsBuild.include(mMyLocation.getPosition());
@@ -265,26 +294,49 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
     }
 
 
-
+    private ImageView mUserView;
+    private Subscription mAvatarSubscription;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        mUserView = (ImageView) menu.findItem(R.id.user).getActionView();
+        mUserView.setPadding(0, 0, JUtils.dip2px(8), 0);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(JUtils.dip2px(40),JUtils.dip2px(32));
+        mUserView.setLayoutParams(params);
+        mUserView.setImageResource(R.drawable.user);
+        mAvatarSubscription = AccountModel.getInstance().getAccountSubject()
+                .filter(account -> account!=null)
+                .subscribe(account -> {
+                    Glide.with(this)
+                            .load(account.getAvatar())
+                            .placeholder(R.drawable.user)
+                            .error(R.drawable.user)
+                            .bitmapTransform(new CropCircleTransformation(MainActivity.this))
+                            .into(mUserView);
+                });
+
+        RxView.clicks(mUserView).subscribe(aVoid -> {
+            Intent i = new Intent(MainActivity.this, PersonDetailActivity.class);
+            i.putExtra(BeamBasePresenter.KEY_DATA, (Parcelable) AccountModel.getInstance().getCurrentAccount());
+            startActivity(i);
+        });
+
+        menu.findItem(R.id.logout).setOnMenuItemClickListener(item -> {
+            AccountModel.getInstance().logout();
+            startActivity(new Intent(this,LoginActivity.class));
+            finish();
+            return true;
+        });
+        menu.findItem(R.id.about).setOnMenuItemClickListener(item -> {
+            startActivity(new Intent(this,AboutActivity.class));
+            return true;
+        });
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    protected void onDestroy() {
+        super.onDestroy();
+        mAvatarSubscription.unsubscribe();
     }
 }

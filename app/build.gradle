@@ -105,6 +105,7 @@ dependencies {
     compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
     compile 'jp.wasabeef:glide-transformations:1.3.1'
     compile 'com.qiniu:qiniu-android-sdk:7.0.7'
+    compile 'com.jude:imageprovider:2.1.0'
 
     compile('com.github.afollestad.material-dialogs:core:0.8.5.8@aar') {
         transitive = true
@@ -120,5 +121,8 @@ dependencies {
     compile 'com.facebook.stetho:stetho-okhttp3:1.3.0'
     compile 'com.google.dagger:dagger:2.0.2'
     apt 'com.google.dagger:dagger-compiler:2.0.2'
+    compile 'cn.com.caoyue.util:time:1.2.1'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    compile 'com.wdullaer:materialdatetimepicker:2.3.0'
     compile project(':lib_amap')
 }

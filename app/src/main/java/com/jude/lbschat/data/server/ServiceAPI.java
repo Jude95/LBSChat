@@ -5,6 +5,7 @@ import com.jude.lbschat.domain.body.Exist;
 import com.jude.lbschat.domain.body.Info;
 import com.jude.lbschat.domain.body.Token;
 import com.jude.lbschat.domain.entities.Account;
+import com.jude.lbschat.domain.entities.PersonBrief;
 
 import java.util.List;
 
@@ -18,17 +19,17 @@ import rx.Observable;
  * Created by Mr.Jude on 2015/11/18.
  */
 public interface ServiceAPI {
-    String SERVER_ADDRESS = "http://123.56.230.6/2.0/";
+    String SERVER_ADDRESS = "http://123.56.230.6/";
 
 //    ------------------------Account----------------------------------
     @POST("account/check_account_exist.php")
     @FormUrlEncoded
-    Observable<Exist> checkAccountExist(@Field("account") String account);
+    Observable<Exist> checkAccountExist(@Field("number") String number);
 
     @POST("account/register.php")
     @FormUrlEncoded
     Observable<Info> register(
-            @Field("account") String account,
+            @Field("number") String number,
             @Field("name") String name,
             @Field("password") String password,
             @Field("code") String code);
@@ -36,13 +37,13 @@ public interface ServiceAPI {
     @POST("account/login.php")
     @FormUrlEncoded
     Observable<Account> login(
-            @Field("account") String account,
+            @Field("number") String number,
             @Field("password") String password);
 
     @POST("account/modify_password.php")
     @FormUrlEncoded
     Observable<Info> modifyPassword(
-            @Field("account") String account,
+            @Field("number") String number,
             @Field("password") String password,
             @Field("code") String code);
 
@@ -51,16 +52,15 @@ public interface ServiceAPI {
     Observable<Account> refreshAccount();
 
 
-//    ------------------------Manager----------------------------------
-
-
-    @GET("manager/admin_user_list.php")
-    Observable<List<Account>> getUserList();
-
-    @POST("manager/admin_authorization.php")
+    @POST("account/edit.php")
     @FormUrlEncoded
-    Observable<Info> authorization(
-            @Field("userId") int userId);
+    Observable<Info> edit(
+            @Field("name") String name,
+            @Field("intro") String intro,
+            @Field("birth") long birth,
+            @Field("gender") int gender,
+            @Field("avatar") String avatar
+            );
 
 //    ------------------------Common----------------------------------
 
@@ -68,7 +68,17 @@ public interface ServiceAPI {
     @GET("qiniu.php")
     Observable<Token> getQiniuToken();
 
+    @POST("location/location.php")
+    @FormUrlEncoded
+    Observable<Info> location(
+            @Field("lat")double lat,
+            @Field("lng")double lng,
+            @Field("address_brief")String addressBrief,
+            @Field("address")String address);
 
 //    ------------------------Data----------------------------------
+
+    @GET("person/persons.php")
+    Observable<List<PersonBrief>> getPersons();
 
 }

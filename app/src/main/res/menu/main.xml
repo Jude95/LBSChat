@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/user"
+        android:title="user"
+        app:actionViewClass="android.widget.ImageView"
+        app:showAsAction="always"
+        ></item>
+    <item
+        android:id="@+id/logout"
+        android:title="注销"
+        app:showAsAction="never"
+        ></item>
+    <item
+        android:id="@+id/about"
+        android:title="关于"
+        app:showAsAction="never"
+        ></item>
+</menu>

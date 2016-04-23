@@ -2,15 +2,19 @@ package com.jude.lbschat.domain.entities;
 
 import android.os.Parcel;
 
+import java.io.Serializable;
+
 /**
  * Created by zhuchenxi on 16/4/22.
  */
-public class Account extends PersonBrief{
+public class Account extends PersonBrief implements Serializable{
     private String token;
     private String number;
 
-    public Account(String name, long birth, int gender, String avatar, String intro, double lat, double lng) {
-        super(name, birth, gender, avatar, intro, lat, lng);
+    public Account(int id, String name, long birth, int gender, String avatar, String intro, double lat, double lng, String addressBrief, String address, String token, String number) {
+        super(id, name, birth, gender, avatar, intro, lat, lng, addressBrief, address);
+        this.token = token;
+        this.number = number;
     }
 
     public String getNumber() {

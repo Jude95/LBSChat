@@ -1,5 +1,11 @@
 package com.jude.lbschat.data.server;
 
+import android.app.Activity;
+import android.app.LauncherActivity;
+import android.content.Intent;
+
+import com.jude.lbschat.presentation.LoginActivity;
+import com.jude.utils.JActivityManager;
 import com.jude.utils.JUtils;
 
 import org.json.JSONException;
@@ -76,13 +82,13 @@ public class ErrorTransform<T> implements Observable.Transformer<T, T> {
         }
 
         private void authFailure(){
-//            Activity activity = JActivityManager.getInstance().currentActivity();
-//            if (activity!=null&&
-//                    !(activity instanceof LauncherActivity)&&
-//                    !(activity instanceof LoginActivity)){
-//                Intent i = new Intent(activity,LoginActivity.class);
-//                activity.startActivity(i);
-//            }
+            Activity activity = JActivityManager.getInstance().currentActivity();
+            if (activity!=null&&
+                    !(activity instanceof LauncherActivity)&&
+                    !(activity instanceof LoginActivity)){
+                Intent i = new Intent(activity,LoginActivity.class);
+                activity.startActivity(i);
+            }
         }
     }
 

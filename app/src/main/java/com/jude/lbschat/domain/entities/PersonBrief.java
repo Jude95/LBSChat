@@ -3,10 +3,14 @@ package com.jude.lbschat.domain.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+
 /**
  * Created by Mr.Jude on 2016/4/21.
  */
-public class PersonBrief implements Parcelable {
+public class PersonBrief implements Serializable, Parcelable {
     private int id;
     private String name;
     private long birth;
@@ -15,9 +19,13 @@ public class PersonBrief implements Parcelable {
     private String intro;
     private double lat;//纬度
     private double lng;//经度
+    @SerializedName("address_brief")
     private String addressBrief;
+    private String address;
 
-    public PersonBrief(String name, long birth, int gender, String avatar, String intro, double lat, double lng) {
+
+    public PersonBrief(int id, String name, long birth, int gender, String avatar, String intro, double lat, double lng, String addressBrief, String address) {
+        this.id = id;
         this.name = name;
         this.birth = birth;
         this.gender = gender;
@@ -25,6 +33,16 @@ public class PersonBrief implements Parcelable {
         this.intro = intro;
         this.lat = lat;
         this.lng = lng;
+        this.addressBrief = addressBrief;
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getId() {
@@ -116,6 +134,7 @@ public class PersonBrief implements Parcelable {
         dest.writeDouble(this.lat);
         dest.writeDouble(this.lng);
         dest.writeString(this.addressBrief);
+        dest.writeString(this.address);
     }
 
     protected PersonBrief(Parcel in) {
@@ -128,6 +147,7 @@ public class PersonBrief implements Parcelable {
         this.lat = in.readDouble();
         this.lng = in.readDouble();
         this.addressBrief = in.readString();
+        this.address = in.readString();
     }
 
     public static final Parcelable.Creator<PersonBrief> CREATOR = new Parcelable.Creator<PersonBrief>() {
@@ -141,4 +161,9 @@ public class PersonBrief implements Parcelable {
             return new PersonBrief[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return id+":"+name+":"+birth+":"+gender+":"+avatar+":"+intro;
+    }
 }

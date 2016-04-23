@@ -18,7 +18,6 @@ import com.jude.utils.JUtils;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 
 /**
@@ -35,9 +34,7 @@ public class AccountModel extends AbsModel {
 
 
     private BehaviorSubject<Account> mAccountSubject = BehaviorSubject.create();
-    private Func1<Account,Boolean> mAccountFilter = account -> {
-        return !(account!=null&&account.equals(mAccountSubject.getValue()));
-    };
+
 
     @Override
     protected void onAppCreate(Context ctx) {
@@ -47,7 +44,10 @@ public class AccountModel extends AbsModel {
         //账号持久化
         mAccountSubject.subscribe(account -> {
             if (account==null) JFileManager.getInstance().getFolder(Dir.Object).deleteChild(FILE_ACCOUNT);
-            else JFileManager.getInstance().getFolder(Dir.Object).writeObjectToFile(account,FILE_ACCOUNT);
+            else {
+                JUtils.Log(account.toString());
+                JFileManager.getInstance().getFolder(Dir.Object).writeObjectToFile(account,FILE_ACCOUNT);
+            }
         });
         //token设置
         mAccountSubject.subscribe(account1 -> {
@@ -65,6 +65,11 @@ public class AccountModel extends AbsModel {
                 .doOnNext(account -> mAccountSubject.onNext(account))
                 .subscribe();
     }
+
+    public Account getCurrentAccount(){
+        return mAccountSubject.getValue();
+    }
+
 
     public BehaviorSubject<Account> getAccountSubject(){
         return mAccountSubject;
@@ -97,8 +102,12 @@ public class AccountModel extends AbsModel {
         mServiceAPI.refreshAccount()
                 .compose(new SchedulerTransform<>())
                 .compose(new ErrorTransform<>(ErrorTransform.ServerErrorHandler.NONE))
-                .filter(mAccountFilter)
                 .subscribe(account -> mAccountSubject.onNext(account));
+    }
+
+    public Observable<Info> edit(String name,String intro,String avatar,long birth,int gender){
+        return mServiceAPI.edit(name, intro, birth, gender, avatar).compose(new SchedulerTransform<>())
+                .doOnNext( info -> refreshAccount());
     }
 
     public void logout(){

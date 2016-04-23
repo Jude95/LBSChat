@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jude.fitsystemwindowlayout.FitSystemWindowsLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:padding_navigation="true"
+    android:fitsSystemWindows="true">
+
+    <include layout="@layout/include_toolbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="72dp"
+            android:src="@drawable/logo"/>
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_gravity="center_horizontal"
+            tools:text="比邻 v1.2"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_gravity="center_horizontal"
+            android:text="刘仲贤制作"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/activity_margin"
+            android:layout_gravity="center_horizontal"
+            android:autoLink="phone"
+            android:text="微信☞18883283663☜电话"/>
+    </LinearLayout>
+
+
+</com.jude.fitsystemwindowlayout.FitSystemWindowsLinearLayout>

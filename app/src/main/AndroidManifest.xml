@@ -54,6 +54,13 @@
         <activity android:name=".presentation.FindPasswordActivity"
             android:theme="@style/AppTheme.Blue"
             android:label="找回密码"/>
+        <activity android:name=".presentation.PersonDetailActivity"
+            android:label=""/>
+        <activity android:name=".presentation.EditActivity"
+            android:label="信息编辑"
+            />
+        <activity android:name=".presentation.AboutActivity"
+            android:label="关于"/>
     </application>
 
 </manifest>
