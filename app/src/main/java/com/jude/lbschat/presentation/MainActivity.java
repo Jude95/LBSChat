@@ -29,6 +29,7 @@ import com.jude.beam.expansion.BeamBasePresenter;
 import com.jude.lbschat.R;
 import com.jude.lbschat.data.AccountModel;
 import com.jude.lbschat.data.LocationModel;
+import com.jude.lbschat.data.RongYunModel;
 import com.jude.lbschat.domain.entities.PersonBrief;
 import com.jude.swipbackhelper.SwipeBackHelper;
 import com.jude.tagview.TAGView;
@@ -102,7 +103,7 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
             aMap.animateCamera(CameraUpdateFactory.zoomOut());
         });
         location.setOnClickListener(v -> {
-            moveTo(mMyLocation.getPosition().latitude, mMyLocation.getPosition().longitude);
+            moveTo(mMyLocationLatLng.latitude, mMyLocationLatLng.longitude);
         });
         type.setOnClickListener(v -> {
             if (mStatus == 0) {
@@ -193,11 +194,13 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
     }
 
     private void initMyPoint() {
-        MarkerOptions markerOption = new MarkerOptions();
-        markerOption.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.location_marker));
-        mMyLocation = aMap.addMarker(markerOption);
-        mMyLocation.setPosition(mMyLocationLatLng = new LatLng(LocationModel.getInstance().getCurrentLocation().latitude, LocationModel.getInstance().getCurrentLocation().longitude));
+        mMyLocationLatLng = new LatLng(LocationModel.getInstance().getCurrentLocation().latitude, LocationModel.getInstance().getCurrentLocation().longitude);
+//        MarkerOptions markerOption = new MarkerOptions();
+//        markerOption.icon(BitmapDescriptorFactory
+//                .fromResource(R.drawable.location_marker));
+//        mMyLocation = aMap.addMarker(markerOption);
+//        mMyLocation.setPosition(mMyLocationLatLng);
+        moveTo(mMyLocationLatLng.latitude,mMyLocationLatLng.longitude,18);
     }
 
     private void startLocation(){
@@ -213,19 +216,19 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
     @Override
     protected void onResume() {
         super.onResume();
-        startLocation();
+        //startLocation();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocation();
+        //stopLocation();
     }
 
     public void clearMarker(){
         if (aMap!=null){
             aMap.clear();
-            initMyPoint();
+            //initMyPoint();
             zoomMarkerList.clear();
         }
     }
@@ -240,8 +243,6 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
         Marker marker = aMap.addMarker(markerOption);
         marker.setToTop();
         mMarkerMap.put(marker, place);
-        if (mMarkerMap.size() < MIN_ZOOM_MARKER_COUNT+1) zoomMarkerList.add(place);
-        if (mMarkerMap.size()== MIN_ZOOM_MARKER_COUNT+1) moveToAdjustPlace(zoomMarkerList);
     }
 
 
@@ -278,7 +279,7 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (marker.equals(mMyLocation))return false;
+        //if (marker.equals(mMyLocation))return false;
         if (lastMarker != null) lastMarker.setIcon(BitmapDescriptorFactory
                 .fromResource(R.drawable.location_point_red));
         moveTo(marker.getPosition().latitude, marker.getPosition().longitude);
@@ -319,6 +320,10 @@ public class MainActivity extends BeamBaseActivity<MainPresenter> implements AMa
             Intent i = new Intent(MainActivity.this, PersonDetailActivity.class);
             i.putExtra(BeamBasePresenter.KEY_DATA, (Parcelable) AccountModel.getInstance().getCurrentAccount());
             startActivity(i);
+        });
+
+        RxView.clicks(edit).subscribe(i->{
+            RongYunModel.getInstance().chatList(this);
         });
 
         menu.findItem(R.id.logout).setOnMenuItemClickListener(item -> {

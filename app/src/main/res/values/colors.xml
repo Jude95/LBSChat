@@ -13,4 +13,5 @@
     <color name="gray100">#dddddd</color>
     <color name="gray600">#999999</color>
     <color name="black">#000</color>
+    <color name="trans">#0000</color>
 </resources>

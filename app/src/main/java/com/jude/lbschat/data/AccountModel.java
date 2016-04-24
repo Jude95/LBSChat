@@ -40,7 +40,6 @@ public class AccountModel extends AbsModel {
     protected void onAppCreate(Context ctx) {
         super.onAppCreate(ctx);
         DaggerServiceModelComponent.builder().build().inject(this);
-
         //账号持久化
         mAccountSubject.subscribe(account -> {
             if (account==null) JFileManager.getInstance().getFolder(Dir.Object).deleteChild(FILE_ACCOUNT);
@@ -64,6 +63,7 @@ public class AccountModel extends AbsModel {
         Observable.just((Account) JFileManager.getInstance().getFolder(Dir.Object).readObjectFromFile(FILE_ACCOUNT))
                 .doOnNext(account -> mAccountSubject.onNext(account))
                 .subscribe();
+
     }
 
     public Account getCurrentAccount(){
@@ -83,6 +83,7 @@ public class AccountModel extends AbsModel {
     public Observable<Account> login(String account, String password){
         return mServiceAPI.login(account,password)
                 .compose(new SchedulerTransform<>())
+                .doOnNext(account2 -> RongYunModel.getInstance().connectRongYun1(account2.getRongCloudToken()))
                 .doOnNext(account1 -> mAccountSubject.onNext(account1));
     }
 

@@ -1,1 +1,1 @@
-include ':app', ':lib_amap'
+include ':app', ':lib_amap', ':lib_rongcloud'

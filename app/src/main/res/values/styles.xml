@@ -27,8 +27,8 @@
         <item name="colorAccent">@color/blue</item>
     </style>
 
-    <style name="LaunchTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:background">@color/black</item>
+    <style name="LaunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@drawable/launch</item>
     </style>
 
     <style name="NoSwipeTheme" parent="AppTheme">

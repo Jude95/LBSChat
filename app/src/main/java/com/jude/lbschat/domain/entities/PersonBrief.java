@@ -119,6 +119,11 @@ public class PersonBrief implements Serializable, Parcelable {
 
 
     @Override
+    public String toString() {
+        return id+":"+name+":"+birth+":"+gender+":"+avatar+":"+intro;
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
@@ -161,9 +166,4 @@ public class PersonBrief implements Serializable, Parcelable {
             return new PersonBrief[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return id+":"+name+":"+birth+":"+gender+":"+avatar+":"+intro;
-    }
 }

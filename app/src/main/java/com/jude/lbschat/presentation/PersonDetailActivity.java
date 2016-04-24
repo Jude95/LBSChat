@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,8 +16,8 @@ import com.jude.beam.bijection.RequiresPresenter;
 import com.jude.beam.expansion.data.BeamDataActivity;
 import com.jude.lbschat.R;
 import com.jude.lbschat.data.AccountModel;
+import com.jude.lbschat.data.RongYunModel;
 import com.jude.lbschat.domain.entities.PersonBrief;
-import com.jude.utils.JUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -67,12 +68,15 @@ public class PersonDetailActivity extends BeamDataActivity<PersonDetailPresenter
         Time time2 = new Time(System.currentTimeMillis()/1000);
         tvAge.setText(time2.getYear()-time1.getYear()+"岁");
 
-        JUtils.Log("A"+data.getId()+" B"+AccountModel.getInstance().getCurrentAccount().getId());
         if (data.getId() == AccountModel.getInstance().getCurrentAccount().getId()){
             floatingActionButton.setImageResource(R.drawable.edit);
             RxView.clicks(floatingActionButton).subscribe(aVoid -> {
                 Intent i = new Intent(this, EditActivity.class);
                 startActivity(i);
+            });
+        }else{
+            RxView.clicks(floatingActionButton).subscribe(aVoid -> {
+                RongYunModel.getInstance().chatPerson(this,getPresenter().getData().getId()+"",getPresenter().getData().getName());
             });
         }
     }

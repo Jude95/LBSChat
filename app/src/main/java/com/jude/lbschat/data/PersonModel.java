@@ -4,16 +4,21 @@ import android.content.Context;
 
 import com.jude.beam.model.AbsModel;
 import com.jude.lbschat.data.server.DaggerServiceModelComponent;
+import com.jude.lbschat.data.server.ErrorTransform;
 import com.jude.lbschat.data.server.SchedulerTransform;
 import com.jude.lbschat.data.server.ServiceAPI;
 import com.jude.lbschat.domain.entities.PersonBrief;
+import com.jude.utils.JUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
+import rx.subjects.BehaviorSubject;
 
 /**
  * Created by Mr.Jude on 2016/4/21.
@@ -24,18 +29,46 @@ public class PersonModel extends AbsModel {
     }
     @Inject
     ServiceAPI mServiceAPI;
+
+    List<PersonBrief> mPersons;
+
+    BehaviorSubject<List<PersonBrief>> mPersonSubject = BehaviorSubject.create();
+    Subscription mRefreshSubscription;
     @Override
     protected void onAppCreate(Context ctx) {
         super.onAppCreate(ctx);
         DaggerServiceModelComponent.builder().build().inject(this);
     }
 
+    public void beginRefresh(){
+        mRefreshSubscription = Observable.interval(0,5, TimeUnit.SECONDS)
+                .flatMap(aLong -> mServiceAPI.getPersons())
+                .compose(new ErrorTransform<>(ErrorTransform.ServerErrorHandler.AUTH))
+                .doOnNext(list->mPersons = list)
+                .doOnNext(list-> JUtils.Log("Refresh"+list.size()+"条数据"))
+                .subscribe(personBriefs -> mPersonSubject.onNext(personBriefs));
+    }
+
+    public void stopRefresh(){
+        mRefreshSubscription.unsubscribe();
+    }
+
     public Observable<List<PersonBrief>> getAllPerson(){
-        return mServiceAPI.getPersons()
-                .flatMapIterable(personBriefs -> personBriefs)
-                .filter(personBrief -> personBrief.getId() != AccountModel.getInstance().getCurrentAccount().getId())
-                .toList()
+        return mPersonSubject
+//                .doOnNext(list-> JUtils.Log("Be"))
+//                .flatMap(Observable::from)
+//                .filter(personBrief -> personBrief.getId() != AccountModel.getInstance().getCurrentAccount().getId())
+//                .buffer(mPersons.size()-1)
+//                .doOnNext(list-> JUtils.Log("Re"))
                 .compose(new SchedulerTransform<>());
+    }
+
+    public PersonBrief findPersonById(int id){
+        if (mPersons!=null)
+            for (PersonBrief mPerson : mPersons) {
+                if (mPerson.getId() == id) return mPerson;
+            }
+        return null;
     }
 
     List<PersonBrief> createVirtualPersonBrief(){

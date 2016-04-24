@@ -71,7 +71,6 @@ public class LocationModel extends AbsModel {
     private void configLocation(Context ctx){
         mLocationClient = new AMapLocationClient(ctx);
         mLocationClient.setLocationListener(aMapLocation -> {
-            JUtils.Log("GetLocation"+aMapLocation);
             //只有位置变动时才上传
             if (!getCurrentLocation().equals(createLocation(aMapLocation)))
                 mLocationSubject.onNext(createLocation(aMapLocation));
@@ -81,7 +80,7 @@ public class LocationModel extends AbsModel {
         AMapLocationClientOption option = new AMapLocationClientOption();
         option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
         //设置定位间隔,单位毫秒
-        option.setInterval(2000);
+        option.setInterval(10000);
         mLocationClient.setLocationOption(option);
     }
 
