@@ -19,7 +19,7 @@ import rx.Observable;
  * Created by Mr.Jude on 2015/11/18.
  */
 public interface ServiceAPI {
-    String SERVER_ADDRESS = "http://123.56.230.6/";
+    String SERVER_ADDRESS = "http://123.56.230.6:82/";
 
 //    ------------------------Account----------------------------------
     @POST("account/check_account_exist.php")
